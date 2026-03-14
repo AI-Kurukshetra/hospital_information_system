@@ -14,7 +14,7 @@ export default async function BillingPage() {
 
   if (unauthorized) {
     return (
-      <AccessDenied description="Billing records are restricted to billing staff and administrators by the MVP security gate." />
+      <AccessDenied description="Billing records are restricted to billing staff and administrators." />
     );
   }
 
@@ -33,7 +33,7 @@ export default async function BillingPage() {
             </h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-slate-600">
               Review encounter-linked claims, track reimbursement status, and
-              edit CPT-based line items for the MVP revenue cycle.
+              edit CPT-based line items across the revenue cycle.
             </p>
           </div>
         </div>

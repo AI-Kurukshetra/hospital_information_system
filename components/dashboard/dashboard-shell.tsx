@@ -10,7 +10,7 @@ const roleCopy: Record<UserRole, { eyebrow: string; summary: string }> = {
   admin: {
     eyebrow: "Operational command",
     summary:
-      "System-wide census, throughput, orders, and revenue are centralized here for the hackathon MVP.",
+      "System-wide census, throughput, orders, and revenue are centralized in one operational view.",
   },
   physician: {
     eyebrow: "Clinical command",
@@ -82,7 +82,7 @@ export function DashboardShell({ role, fullName }: DashboardShellProps) {
 
           <div className="rounded-[1.75rem] border border-white/70 bg-white/80 p-6 shadow-[0_30px_80px_-50px_rgba(15,23,42,0.4)] backdrop-blur">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-slate-900">MVP Gate Status</p>
+              <p className="text-sm font-semibold text-slate-900">System Status</p>
               <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
                 Foundation Active
@@ -91,15 +91,15 @@ export function DashboardShell({ role, fullName }: DashboardShellProps) {
             <div className="mt-6 space-y-4 text-sm text-slate-600">
               <div className="flex items-start gap-3">
                 <Activity className="mt-0.5 h-4 w-4 text-sky-600" />
-                <p>Schema, RLS, and role-aware navigation are being established first.</p>
+                <p>Role-aware navigation and org-scoped data are active across all modules.</p>
               </div>
               <div className="flex items-start gap-3">
                 <Activity className="mt-0.5 h-4 w-4 text-sky-600" />
-                <p>Patient, bed, chart, order, billing, and dashboard modules will land on this shell next.</p>
+                <p>Patient, bed, chart, orders, and billing modules are fully operational.</p>
               </div>
               <div className="flex items-start gap-3">
                 <Activity className="mt-0.5 h-4 w-4 text-sky-600" />
-                <p>Security gates remain explicit: org scoping everywhere, billing limited to admin and billing roles.</p>
+                <p>Billing access is restricted to admin and billing roles.</p>
               </div>
             </div>
           </div>

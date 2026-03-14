@@ -19,7 +19,7 @@ export default async function BillingDetailPage({
 
   if (unauthorized) {
     return (
-      <AccessDenied description="Billing records are restricted to billing staff and administrators by the MVP security gate." />
+      <AccessDenied description="Billing records are restricted to billing staff and administrators." />
     );
   }
 

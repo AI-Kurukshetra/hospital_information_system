@@ -40,7 +40,7 @@ export function DashboardClient({
       <div className="space-y-8">
         <Hero
           eyebrow="Revenue command"
-          title={`${fullName}, billing is live for the MVP.`}
+          title={`${fullName}, billing records and claim tracking are live.`}
           summary="Track draft claims, submitted balances, and billing throughput from a single operational view."
         />
         <section className="grid gap-4 md:grid-cols-3">
@@ -101,8 +101,8 @@ export function DashboardClient({
     <div className="space-y-8">
       <Hero
         eyebrow="Operational command"
-        title={`${fullName}, the full demo dashboard is now live.`}
-        summary="Census, occupancy, orders, admissions, discharges, and revenue indicators are centralized for the MVP."
+        title={`${fullName}, your hospital operations dashboard is ready.`}
+        summary="Census, occupancy, orders, admissions, discharges, and revenue indicators are centralized in one view."
       />
       <KpiCards stats={stats} />
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
@@ -139,7 +139,7 @@ function Hero({
           </p>
         </div>
         <div className="rounded-[1.75rem] border border-white/70 bg-white/80 p-6 shadow-[0_30px_80px_-50px_rgba(15,23,42,0.4)] backdrop-blur">
-          <p className="text-sm font-semibold text-slate-900">MVP Status</p>
+          <p className="text-sm font-semibold text-slate-900">System Status</p>
           <div className="mt-5 space-y-3 text-sm text-slate-600">
             <p>Registration, admission, clinical charting, and orders are working.</p>
             <p>Billing is now available to admin and billing roles only.</p>
