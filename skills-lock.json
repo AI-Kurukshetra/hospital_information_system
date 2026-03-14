@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "skills": {
+    "env-validation": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "4e866656a5629aa0a4ae1291d0c2c13f61cc622a536f22b74504dad7a43c827e"
+    },
+    "env-workflow-vercel": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "9841fcb3afb2dd80c63374701e8cca9d3ad9afde745b4a2ffc4fd7612d4060a8"
+    },
+    "playwright-tests": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "8174121af64dd23f4774cf0daa0be63faad6a4e7b3c02af60340ad4bb717622d"
+    },
+    "resend-setup": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "5e860cb81a83e7748750edcbade3657d3bb22213c5d7b6836128bb018ef31858"
+    },
+    "stripe-best-practices": {
+      "source": "stripe/agent-toolkit",
+      "sourceType": "github",
+      "computedHash": "c96412bd7ea966c643cbff87c05f59709a7b7b195bff6ae066a8fce7226d2ba1"
+    },
+    "stripe-subscriptions": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "ddd1564590525a24abe030b7a55dd4081a07a99cadaea3b10b913b45bfa0ab74"
+    },
+    "stripe-sync": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "195eeb59ff4b181eba9065752f35753b931d72988de5bd97d625b6e1bb23c1ca"
+    },
+    "testing": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "48bd3d1011ecbbae9d64d9fe80989471fca8e1fd4b1cd0319b6765ec6a06f877"
+    },
+    "upgrade-stripe": {
+      "source": "stripe/agent-toolkit",
+      "sourceType": "github",
+      "computedHash": "83b0068e099b50bd71febd20373e13dc55b2b20cf6daaf36f45089e2fd7c92bb"
+    },
+    "url-state-management": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "47d952fc4213930ab57ef7988dda1ea2994ad11d5aeb6355f4f20da8c75b0473"
+    },
+    "use-fullstackrecipes": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "fdd87104c16fee73b227098a499c617d0a638b03055d773e3895679f5d7d0405"
+    },
+    "using-drizzle-queries": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "dc727321d36f074959c0057819d05ed324f3618cfed5414371eedd4aede0714d"
+    },
+    "using-tests": {
+      "source": "andrelandgraf/fullstackrecipes",
+      "sourceType": "github",
+      "computedHash": "9d34074fe33c733638c604a32aca2d2b0f8233128a519a19a4261ff4b1009d2f"
+    }
+  }
+}
