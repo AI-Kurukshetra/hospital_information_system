@@ -88,6 +88,16 @@ export interface Vitals {
   recorded_at: string;
 }
 
+export interface Diagnosis {
+  id: string;
+  encounter_id: string;
+  icd10_code: string;
+  description: string;
+  diagnosis_type: "primary" | "secondary";
+  added_by: string | null;
+  added_at: string;
+}
+
 export interface Order {
   id: string;
   encounter_id: string;

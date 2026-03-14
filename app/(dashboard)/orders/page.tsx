@@ -1,9 +1,15 @@
 import { AccessDenied } from "@/components/layout/access-denied";
-import { ModulePlaceholder } from "@/components/dashboard/module-placeholder";
 import { requireRole } from "@/lib/auth";
+import { getOrdersQueueData } from "@/lib/clinical";
+import { OrdersQueue } from "@/components/orders/orders-queue";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function OrdersPage() {
-  const { unauthorized } = await requireRole(["admin", "physician", "nurse"]);
+  const [access, supabase] = await Promise.all([
+    requireRole(["admin", "physician", "nurse"]),
+    createClient(),
+  ]);
+  const { unauthorized } = access;
 
   if (unauthorized) {
     return (
@@ -11,16 +17,7 @@ export default async function OrdersPage() {
     );
   }
 
-  return (
-    <ModulePlaceholder
-      title="Orders Queue"
-      summary="Sprint 2 will convert this route into the cross-patient active orders queue for nurses and physicians."
-      bullets={[
-        "Priority-first queue for pending and in-progress orders",
-        "Department and order-type filtering",
-        "Quick status transitions on active orders",
-        "Links back to the patient chart for context",
-      ]}
-    />
-  );
+  const orders = await getOrdersQueueData(supabase, access.profile.org_id ?? "");
+
+  return <OrdersQueue initialOrders={orders} />;
 }

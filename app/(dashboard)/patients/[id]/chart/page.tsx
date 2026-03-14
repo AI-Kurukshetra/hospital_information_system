@@ -1,9 +1,21 @@
 import { AccessDenied } from "@/components/layout/access-denied";
-import { ModulePlaceholder } from "@/components/dashboard/module-placeholder";
+import { PatientChartClient } from "@/components/chart/patient-chart-client";
 import { requireRole } from "@/lib/auth";
+import { getPatientChartData } from "@/lib/clinical";
+import { createClient } from "@/lib/supabase/server";
+import { notFound } from "next/navigation";
 
-export default async function PatientChartPlaceholderPage() {
-  const { unauthorized } = await requireRole(["admin", "physician", "nurse"]);
+export default async function PatientChartPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const [access, { id }, supabase] = await Promise.all([
+    requireRole(["admin", "physician", "nurse"]),
+    params,
+    createClient(),
+  ]);
+  const { unauthorized } = access;
 
   if (unauthorized) {
     return (
@@ -11,16 +23,11 @@ export default async function PatientChartPlaceholderPage() {
     );
   }
 
-  return (
-    <ModulePlaceholder
-      title="Patient Chart"
-      summary="Sprint 2 will expand this route into the full EHR view with encounter overview, vitals, diagnoses, orders, notes, and billing handoff."
-      bullets={[
-        "Encounter header with attending physician, bed, and status",
-        "Vitals history with abnormal highlighting",
-        "Orders and notes tabs for physician and nursing workflows",
-        "Billing handoff link for the encounter record",
-      ]}
-    />
-  );
+  const data = await getPatientChartData(supabase, access.profile.org_id ?? "", id);
+
+  if (!data) {
+    notFound();
+  }
+
+  return <PatientChartClient data={data} role={access.profile.role} />;
 }

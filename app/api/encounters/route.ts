@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { postgresUuidField } from "@/lib/validation";
 
 const createEncounterSchema = z.object({
-  patient_id: z.string().uuid(),
-  bed_id: z.string().uuid(),
-  attending_physician_id: z.string().uuid(),
-  dept_id: z.string().uuid(),
+  patient_id: postgresUuidField,
+  bed_id: postgresUuidField,
+  attending_physician_id: postgresUuidField,
+  dept_id: postgresUuidField,
   chief_complaint: z.string().trim().optional().or(z.literal("")),
 });
 

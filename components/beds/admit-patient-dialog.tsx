@@ -52,16 +52,21 @@ function AdmitPatientDialogInner({
   onAdmitted: (payload: { patientId: string }) => Promise<void> | void;
 }) {
   const [patientId, setPatientId] = useState(prefillPatientId ?? "");
-  const [physicianId, setPhysicianId] = useState(
-    physicians[0]?.id ?? "",
-  );
+  const [physicianId, setPhysicianId] = useState(physicians[0]?.id ?? "");
   const [chiefComplaint, setChiefComplaint] = useState("");
   const [pending, setPending] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!patientId || !physicianId) {
+    const resolvedPatientId =
+      resolvePatientId(patientId, patients) ||
+      resolvePatientId(prefillPatientId ?? "", patients);
+    const resolvedPhysicianId =
+      resolvePhysicianId(physicianId, physicians) ||
+      resolvePhysicianId(physicians[0]?.id ?? "", physicians);
+
+    if (!resolvedPatientId || !resolvedPhysicianId) {
       toast.error("Patient and physician are required.");
       return;
     }
@@ -73,11 +78,11 @@ function AdmitPatientDialogInner({
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        patient_id: patientId,
+        patient_id: resolvedPatientId,
         bed_id: bed.id,
-        attending_physician_id: physicianId,
+        attending_physician_id: resolvedPhysicianId,
         dept_id: bed.dept_id,
-        chief_complaint: chiefComplaint,
+        chief_complaint: chiefComplaint.trim(),
       }),
     });
 
@@ -94,7 +99,7 @@ function AdmitPatientDialogInner({
     }
 
     toast.success("Patient admitted successfully.");
-    await onAdmitted({ patientId });
+    await onAdmitted({ patientId: resolvedPatientId });
     setPending(false);
     onClose();
   }
@@ -104,8 +109,13 @@ function AdmitPatientDialogInner({
       <form onSubmit={handleSubmit} className="space-y-5">
         <Field label="Patient">
           <select
-            value={patientId}
-            onChange={(event) => setPatientId(event.target.value)}
+            value={
+              resolvePatientId(patientId, patients) ||
+              resolvePatientId(prefillPatientId ?? "", patients)
+            }
+            onChange={(event) =>
+              setPatientId(resolvePatientId(event.target.value, patients))
+            }
             className={inputClassName}
           >
             <option value="">Select registered patient</option>
@@ -119,8 +129,13 @@ function AdmitPatientDialogInner({
 
         <Field label="Attending Physician">
           <select
-            value={physicianId}
-            onChange={(event) => setPhysicianId(event.target.value)}
+            value={
+              resolvePhysicianId(physicianId, physicians) ||
+              resolvePhysicianId(physicians[0]?.id ?? "", physicians)
+            }
+            onChange={(event) =>
+              setPhysicianId(resolvePhysicianId(event.target.value, physicians))
+            }
             className={inputClassName}
           >
             <option value="">Select physician</option>
@@ -219,3 +234,49 @@ export function DialogShell({
 
 const inputClassName =
   "w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-950 outline-none transition focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100";
+
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isUuid(value: string) {
+  return uuidPattern.test(value);
+}
+
+function resolvePatientId(value: string, patients: PatientLookup[]) {
+  const candidate = value.trim();
+
+  if (!candidate) {
+    return "";
+  }
+
+  if (isUuid(candidate) && patients.some((patient) => patient.id === candidate)) {
+    return candidate;
+  }
+
+  const matchedPatient = patients.find(
+    (patient) => `${patient.full_name} · ${patient.mrn}` === candidate,
+  );
+
+  return matchedPatient?.id ?? "";
+}
+
+function resolvePhysicianId(value: string, physicians: PhysicianLookup[]) {
+  const candidate = value.trim();
+
+  if (!candidate) {
+    return "";
+  }
+
+  if (
+    isUuid(candidate) &&
+    physicians.some((physician) => physician.id === candidate)
+  ) {
+    return candidate;
+  }
+
+  const matchedPhysician = physicians.find(
+    (physician) => physician.full_name === candidate,
+  );
+
+  return matchedPhysician?.id ?? "";
+}

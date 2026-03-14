@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { postgresUuidField } from "@/lib/validation";
 
 const bedUpdateSchema = z.object({
   status: z.enum(["available", "occupied", "housekeeping", "maintenance"]),
-  patient_id: z.string().uuid().nullable().optional(),
+  patient_id: postgresUuidField.nullable().optional(),
 });
 
 export async function PATCH(
