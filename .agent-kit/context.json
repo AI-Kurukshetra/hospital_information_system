@@ -1,0 +1,85 @@
+{
+  "project": {
+    "name": "Healthland Centriq",
+    "type": "Cloud-native Hospital Information System",
+    "phase": "product",
+    "active_sprint": "Sprint 1"
+  },
+  "source_of_truth": {
+    "prd_path": "docs/PRD.md",
+    "prompt_path": "docs/PROMPT.md"
+  },
+  "product": {
+    "mvp_goal": "Register -> Admit -> Treat -> Bill -> Discharge",
+    "target_roles": ["admin", "physician", "nurse", "billing", "receptionist"]
+  },
+  "architecture": {
+    "schema_path": "supabase/migrations/001_initial_schema.sql",
+    "route_contracts": [
+      "GET /dashboard",
+      "GET /api/patients",
+      "POST /api/patients",
+      "GET /api/patients/[id]",
+      "GET /patients",
+      "GET /patients/new",
+      "GET /patients/[id]",
+      "GET /beds",
+      "GET /orders",
+      "GET /billing",
+      "GET /admin"
+    ],
+    "rls_status": {
+      "organizations": "enabled",
+      "departments": "enabled",
+      "beds": "enabled",
+      "user_profiles": "enabled",
+      "patients": "enabled",
+      "encounters": "enabled",
+      "vitals": "enabled",
+      "diagnoses": "enabled",
+      "orders": "enabled",
+      "clinical_notes": "enabled",
+      "billing_records": "enabled",
+      "billing_line_items": "enabled"
+    }
+  },
+  "engineering": {
+    "frontend_modules": [
+      "app/(dashboard)/layout.tsx",
+      "components/layout/sidebar.tsx",
+      "components/layout/user-menu.tsx",
+      "app/(dashboard)/dashboard/page.tsx",
+      "app/(dashboard)/patients/page.tsx",
+      "app/(dashboard)/patients/new/page.tsx",
+      "app/(dashboard)/patients/[id]/page.tsx",
+      "components/patients/patient-form.tsx",
+      "components/patients/patient-list.tsx",
+      "components/patients/patient-card.tsx"
+    ],
+    "backend_routes": [
+      "app/auth/callback/route.ts",
+      "proxy.ts",
+      "app/api/patients/route.ts",
+      "app/api/patients/[id]/route.ts"
+    ],
+    "seed_status": "Seed applied to Supabase: 1 org, 5 departments, 25 beds, 5 demo users, 10 patients, 3 active encounters, 3 billing records."
+  },
+  "qa": {
+    "critical_flows": [
+      "Unauthenticated access redirects to /login",
+      "Authenticated role-aware navigation renders correctly",
+      "Billing and admin routes enforce role checks",
+      "Patient directory loads for admin and is denied for billing"
+    ],
+    "known_issues": [
+      "Bed dashboard, admission dialogs, and discharge workflow still pending in Sprint 1.",
+      "Clinical chart, billing editor, and admin analytics remain placeholder routes.",
+      "TanStack Table triggers a React Compiler compatibility warning during lint, but not a build failure."
+    ]
+  },
+  "devops": {
+    "deploy_target": "Vercel",
+    "env_status": "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY required; service role key still needs to be added to .env.example.",
+    "preview_url": ""
+  }
+}

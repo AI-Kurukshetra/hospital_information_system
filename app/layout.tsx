@@ -1,20 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { AppToaster } from "@/components/providers/app-toaster";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Boilerplate App",
-  description: "Next.js + Supabase authentication boilerplate",
+  title: "Healthland Centriq",
+  description:
+    "Modern hospital information system for critical access hospitals.",
 };
 
 export default function RootLayout({
@@ -24,10 +15,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="antialiased">
         {children}
+        <AppToaster />
       </body>
     </html>
   );
