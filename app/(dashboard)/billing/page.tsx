@@ -26,7 +26,7 @@ export default async function BillingPage() {
         <div className="grid gap-8 bg-[radial-gradient(circle_at_top_left,#dbeafe_0%,transparent_32%),linear-gradient(135deg,#ffffff_0%,#f8fafc_60%,#e0f2fe_100%)] px-8 py-10 lg:grid-cols-[1.45fr_0.85fr]">
           <div>
             <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
-              Sprint 3
+              Revenue Cycle
             </p>
             <h1 className="mt-3 text-4xl font-semibold text-slate-950">
               Billing & Revenue

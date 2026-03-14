@@ -20,7 +20,7 @@ export default async function NewPatientPage() {
     <div className="space-y-6">
       <section className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
         <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
-          Sprint 1
+          Patient Registration
         </p>
         <h1 className="mt-3 text-4xl font-semibold text-slate-950">
           Register New Patient

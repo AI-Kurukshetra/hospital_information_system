@@ -73,7 +73,7 @@ export function DashboardShell({ role, fullName }: DashboardShellProps) {
               {content.eyebrow}
             </p>
             <h1 className="mt-4 max-w-2xl text-4xl font-semibold leading-tight text-slate-950">
-              {fullName}, Sprint 0 is now framing the full hospital workflow.
+              Welcome back, {fullName}.
             </h1>
             <p className="mt-4 max-w-2xl text-base leading-7 text-slate-600">
               {content.summary}

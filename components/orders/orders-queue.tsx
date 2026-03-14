@@ -43,7 +43,7 @@ export function OrdersQueue({ initialOrders }: { initialOrders: OrdersQueueItem[
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
-              Sprint 2
+              Clinical Operations
             </p>
             <h1 className="mt-3 text-4xl font-semibold text-slate-950">
               Active Orders Queue

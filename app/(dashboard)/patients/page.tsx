@@ -66,7 +66,7 @@ export default async function PatientsPage({
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
-              Sprint 1
+              Patient Management
             </p>
             <h1 className="mt-3 text-4xl font-semibold text-slate-950">
               Patient Registration and Directory

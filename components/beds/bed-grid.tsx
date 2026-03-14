@@ -121,7 +121,7 @@ export function BedGrid({
           <div>
             <div className="flex items-center gap-3">
               <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
-                Sprint 1
+                Bed Management
               </p>
               <span className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
