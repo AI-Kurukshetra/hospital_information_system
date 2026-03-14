@@ -3,7 +3,7 @@
     "name": "Healthland Centriq",
     "type": "Cloud-native Hospital Information System",
     "phase": "product",
-    "active_sprint": "Sprint 2"
+    "active_sprint": "Sprint 4"
   },
   "source_of_truth": {
     "prd_path": "docs/PRD.md",
@@ -33,6 +33,11 @@
       "GET /api/encounters/[id]/notes",
       "POST /api/encounters/[id]/notes",
       "PATCH /api/orders/[id]",
+      "GET /api/billing",
+      "POST /api/billing",
+      "GET /api/billing/[id]",
+      "PATCH /api/billing/[id]",
+      "GET /api/dashboard/stats",
       "GET /patients",
       "GET /patients/new",
       "GET /patients/[id]",
@@ -40,6 +45,7 @@
       "GET /beds",
       "GET /orders",
       "GET /billing",
+      "GET /billing/[id]",
       "GET /admin"
     ],
     "rls_status": {
@@ -69,12 +75,25 @@
       "app/(dashboard)/patients/[id]/chart/page.tsx",
       "app/(dashboard)/beds/page.tsx",
       "app/(dashboard)/orders/page.tsx",
+      "app/(dashboard)/billing/page.tsx",
+      "app/(dashboard)/billing/[id]/page.tsx",
+      "app/(dashboard)/admin/page.tsx",
       "components/beds/bed-grid.tsx",
+      "components/billing/billing-summary-cards.tsx",
+      "components/billing/billing-table.tsx",
+      "components/billing/billing-detail-client.tsx",
+      "components/billing/line-items-editor.tsx",
       "components/chart/patient-chart-client.tsx",
       "components/chart/vitals-section.tsx",
       "components/chart/diagnoses-section.tsx",
       "components/chart/orders-section.tsx",
       "components/chart/notes-section.tsx",
+      "components/dashboard/dashboard-client.tsx",
+      "components/dashboard/kpi-cards.tsx",
+      "components/dashboard/census-table.tsx",
+      "components/dashboard/bed-occupancy-chart.tsx",
+      "components/dashboard/recent-activity.tsx",
+      "components/dashboard/orders-summary.tsx",
       "components/orders/orders-queue.tsx",
       "components/patients/patient-form.tsx",
       "components/patients/patient-list.tsx",
@@ -93,7 +112,10 @@
       "app/api/encounters/[id]/diagnoses/route.ts",
       "app/api/encounters/[id]/orders/route.ts",
       "app/api/encounters/[id]/notes/route.ts",
-      "app/api/orders/[id]/route.ts"
+      "app/api/orders/[id]/route.ts",
+      "app/api/billing/route.ts",
+      "app/api/billing/[id]/route.ts",
+      "app/api/dashboard/stats/route.ts"
     ],
     "seed_status": "Seed applied to Supabase: 1 org, 5 departments, 25 beds, 5 demo users, 10 patients, 3 active encounters, 3 billing records."
   },
@@ -104,17 +126,18 @@
       "Billing and admin routes enforce role checks",
       "Patient directory loads for admin and is denied for billing",
       "Registered patient can be admitted from the bed board and discharged back to housekeeping",
-      "Orders queue renders active orders and status transitions remove completed work"
+      "Orders queue renders active orders and status transitions remove completed work",
+      "Dashboard renders live census, occupancy, and activity data",
+      "Billing dashboard and billing detail routes render on the built app"
     ],
     "known_issues": [
-      "Chart form submits were not fully browser-verified on the stale dev server; built route coverage is confirmed, but clinical form mutation needs one additional smoke pass.",
-      "Billing editor and admin analytics remain placeholder routes.",
+      "Chart form submits and billing save were not fully browser-verified through agent-browser despite the routes compiling and rendering in the built app.",
       "TanStack Table triggers a React Compiler compatibility warning during lint, but not a build failure."
     ]
   },
   "devops": {
     "deploy_target": "Vercel",
     "env_status": "NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY are documented for local and deploy workflows.",
-    "preview_url": ""
+    "preview_url": "http://127.0.0.1:3003"
   }
 }

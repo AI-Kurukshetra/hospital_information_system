@@ -140,6 +140,16 @@ export interface BillingRecord {
   updated_at: string;
 }
 
+export interface BillingLineItem {
+  id: string;
+  billing_record_id: string;
+  cpt_code: string | null;
+  description: string;
+  quantity: number;
+  unit_price: number;
+  total: number;
+}
+
 export interface BedBoardItem {
   id: string;
   dept_id: string;
