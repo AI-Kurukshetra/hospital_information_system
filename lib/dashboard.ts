@@ -47,10 +47,36 @@ export interface DashboardStats {
   }[];
 }
 
+const emptyDashboardStats: DashboardStats = {
+  census: 0,
+  occupancy_pct: 0,
+  pending_orders: 0,
+  todays_admissions: 0,
+  todays_discharges: 0,
+  draft_billing_records: 0,
+  total_beds: 0,
+  available_beds: 0,
+  submitted_billing_records: 0,
+  total_outstanding: 0,
+  bed_occupancy_by_department: [],
+  census_rows: [],
+  recent_activity: [],
+  order_summary: [
+    { type: "medication", pending: 0 },
+    { type: "lab", pending: 0 },
+    { type: "imaging", pending: 0 },
+    { type: "other", pending: 0 },
+  ],
+};
+
 export async function getDashboardStats(
   supabase: SupabaseLike,
   orgId: string,
 ): Promise<DashboardStats> {
+  if (!orgId) {
+    return emptyDashboardStats;
+  }
+
   const [
     { data: encounters, error: encountersError },
     { data: orders, error: ordersError },
@@ -65,7 +91,7 @@ export async function getDashboardStats(
       .select("*")
       .eq("org_id", orgId)
       .order("admission_date", { ascending: false }),
-    supabase.from("orders").select("*"),
+    supabase.from("orders").select("*"), // TODO(multi-tenant): orders has no org_id; scope via encounter_id IN active encounter ids for prod
     supabase
       .from("beds")
       .select("id, dept_id, bed_number, status, bed_type, patient_id, created_at, updated_at"),

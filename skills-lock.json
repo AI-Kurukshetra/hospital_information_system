@@ -65,6 +65,11 @@
       "source": "andrelandgraf/fullstackrecipes",
       "sourceType": "github",
       "computedHash": "9d34074fe33c733638c604a32aca2d2b0f8233128a519a19a4261ff4b1009d2f"
+    },
+    "vercel-cli": {
+      "source": "vercel/vercel",
+      "sourceType": "github",
+      "computedHash": "657b90f14ba7bb8b68279d50c7c5d0b9033dc0a847e345eb18fdfbe8e46aaa3b"
     }
   }
 }

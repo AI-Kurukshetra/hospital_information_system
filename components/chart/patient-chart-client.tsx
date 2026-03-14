@@ -7,10 +7,10 @@ import { EncounterSummary } from "@/components/chart/encounter-summary";
 import { NotesSection } from "@/components/chart/notes-section";
 import { OrdersSection } from "@/components/chart/orders-section";
 import { VitalsSection } from "@/components/chart/vitals-section";
-import type { ChartNote, ChartOrder, PatientChartData } from "@/lib/clinical";
+import type { ChartBillingRecord, ChartNote, ChartOrder, PatientChartData } from "@/lib/clinical";
 import type { Diagnosis, Order, UserRole, Vitals } from "@/types";
 
-const tabs = ["overview", "vitals", "orders", "notes"] as const;
+const tabs = ["overview", "vitals", "orders", "notes", "billing"] as const;
 type ChartTab = (typeof tabs)[number];
 
 export function PatientChartClient({
@@ -110,6 +110,123 @@ export function PatientChartClient({
           onCreated={(note: ChartNote) => setNotes((current) => [note, ...current])}
         />
       ) : null}
+
+      {activeTab === "billing" ? (
+        <BillingTab billingRecord={data.billing_record} billingRecordId={data.billing_record?.id} role={role} />
+      ) : null}
+    </div>
+  );
+}
+
+const claimStatusStyles: Record<
+  NonNullable<ChartBillingRecord["claim_status"]>,
+  string
+> = {
+  draft: "bg-slate-100 text-slate-700",
+  submitted: "bg-blue-100 text-blue-700",
+  paid: "bg-green-100 text-green-700",
+  denied: "bg-red-100 text-red-700",
+};
+
+function BillingTab({
+  billingRecord,
+  billingRecordId,
+  role,
+}: {
+  billingRecord: ChartBillingRecord | null;
+  billingRecordId: string | undefined;
+  role: UserRole;
+}) {
+  if (!billingRecord) {
+    return (
+      <div className="rounded-[1.75rem] border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm">
+        No billing record found for this encounter.
+      </div>
+    );
+  }
+
+  const canAccessBilling = role === "admin" || role === "billing";
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-slate-900">Billing Record</h2>
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${claimStatusStyles[billingRecord.claim_status]}`}
+          >
+            {billingRecord.claim_status}
+          </span>
+        </div>
+
+        <dl className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div>
+            <dt className="text-xs font-medium text-slate-500">Total Charges</dt>
+            <dd className="mt-1 text-sm font-semibold text-slate-900">
+              ${billingRecord.total_charges.toFixed(2)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium text-slate-500">Expected Reimbursement</dt>
+            <dd className="mt-1 text-sm font-semibold text-slate-900">
+              ${billingRecord.expected_reimbursement.toFixed(2)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium text-slate-500">Patient Responsibility</dt>
+            <dd className="mt-1 text-sm font-semibold text-slate-900">
+              ${billingRecord.patient_responsibility.toFixed(2)}
+            </dd>
+          </div>
+          {billingRecord.payer && (
+            <div>
+              <dt className="text-xs font-medium text-slate-500">Payer</dt>
+              <dd className="mt-1 text-sm text-slate-900">{billingRecord.payer}</dd>
+            </div>
+          )}
+        </dl>
+
+        {canAccessBilling && billingRecordId && (
+          <div className="mt-4">
+            <a
+              href={`/billing/${billingRecordId}`}
+              className="text-sm font-medium text-blue-600 hover:underline"
+            >
+              Edit billing record →
+            </a>
+          </div>
+        )}
+      </div>
+
+      {billingRecord.line_items.length > 0 && (
+        <div className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm">
+          <h3 className="mb-4 text-sm font-semibold text-slate-900">CPT Line Items</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-100 text-left text-xs font-medium text-slate-500">
+                  <th className="pb-2 pr-4">CPT Code</th>
+                  <th className="pb-2 pr-4">Description</th>
+                  <th className="pb-2 pr-4 text-right">Qty</th>
+                  <th className="pb-2 pr-4 text-right">Unit Price</th>
+                  <th className="pb-2 text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
+                {billingRecord.line_items.map((item, index) => (
+                  <tr key={index} className="py-2">
+                    <td className="py-2 pr-4 font-mono text-xs">{item.cpt_code ?? "—"}</td>
+                    <td className="py-2 pr-4 text-slate-700">{item.description}</td>
+                    <td className="py-2 pr-4 text-right">{item.quantity}</td>
+                    <td className="py-2 pr-4 text-right">${item.unit_price.toFixed(2)}</td>
+                    <td className="py-2 text-right font-medium">${item.total.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

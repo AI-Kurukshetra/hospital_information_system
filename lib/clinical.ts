@@ -2,6 +2,8 @@ import { z } from "zod";
 import { postgresUuidField } from "@/lib/validation";
 import type {
   Bed,
+  BillingLineItem,
+  BillingRecord,
   ClinicalNote,
   Department,
   Diagnosis,
@@ -94,6 +96,16 @@ export interface ChartNote extends ClinicalNote {
   author_name: string | null;
 }
 
+export interface ChartBillingRecord {
+  id: string;
+  claim_status: BillingRecord["claim_status"];
+  total_charges: number;
+  expected_reimbursement: number;
+  patient_responsibility: number;
+  payer: string | null;
+  line_items: Pick<BillingLineItem, "cpt_code" | "description" | "quantity" | "unit_price" | "total">[];
+}
+
 export interface PatientChartData {
   patient: Patient;
   encounter: ChartEncounterSummary | null;
@@ -101,6 +113,7 @@ export interface PatientChartData {
   diagnoses: Diagnosis[];
   orders: ChartOrder[];
   notes: ChartNote[];
+  billing_record: ChartBillingRecord | null;
 }
 
 export interface OrdersQueueItem extends Order {
@@ -124,6 +137,10 @@ export async function getPatientChartData(
   orgId: string,
   patientId: string,
 ): Promise<PatientChartData | null> {
+  if (!orgId) {
+    return null;
+  }
+
   const [{ data: patient, error: patientError }, { data: encounters, error: encounterError }] =
     await Promise.all([
       supabase
@@ -165,6 +182,7 @@ export async function getPatientChartData(
       diagnoses: [],
       orders: [],
       notes: [],
+      billing_record: null,
     };
   }
 
@@ -176,6 +194,7 @@ export async function getPatientChartData(
     { data: diagnoses, error: diagnosesError },
     { data: orders, error: ordersError },
     { data: notes, error: notesError },
+    { data: billingRecord, error: billingRecordError },
   ] = await Promise.all([
     activeEncounter.bed_id
       ? supabase
@@ -218,6 +237,11 @@ export async function getPatientChartData(
       .select("*")
       .eq("encounter_id", activeEncounter.id)
       .order("created_at", { ascending: false }),
+    supabase
+      .from("billing_records")
+      .select("id, claim_status, total_charges, expected_reimbursement, patient_responsibility, payer")
+      .eq("encounter_id", activeEncounter.id)
+      .maybeSingle(),
   ]);
 
   if (bedError) {
@@ -246,6 +270,25 @@ export async function getPatientChartData(
 
   if (notesError) {
     throw new Error(notesError.message);
+  }
+
+  if (billingRecordError) {
+    throw new Error(billingRecordError.message);
+  }
+
+  let billingLineItems: ChartBillingRecord["line_items"] = [];
+
+  if (billingRecord) {
+    const { data: lineItems, error: lineItemsError } = await supabase
+      .from("billing_line_items")
+      .select("cpt_code, description, quantity, unit_price, total")
+      .eq("billing_record_id", billingRecord.id);
+
+    if (lineItemsError) {
+      throw new Error(lineItemsError.message);
+    }
+
+    billingLineItems = (lineItems ?? []) as ChartBillingRecord["line_items"];
   }
 
   const orderedByIds = Array.from(
@@ -301,6 +344,17 @@ export async function getPatientChartData(
       ...note,
       author_name: note.author_id ? profileMap.get(note.author_id) ?? null : null,
     })),
+    billing_record: billingRecord
+      ? {
+          id: (billingRecord as BillingRecord).id,
+          claim_status: (billingRecord as BillingRecord).claim_status,
+          total_charges: (billingRecord as BillingRecord).total_charges,
+          expected_reimbursement: (billingRecord as BillingRecord).expected_reimbursement,
+          patient_responsibility: (billingRecord as BillingRecord).patient_responsibility,
+          payer: (billingRecord as BillingRecord).payer,
+          line_items: billingLineItems,
+        }
+      : null,
   };
 }
 
@@ -308,6 +362,10 @@ export async function getOrdersQueueData(
   supabase: SupabaseLike,
   orgId: string,
 ): Promise<OrdersQueueItem[]> {
+  if (!orgId) {
+    return [];
+  }
+
   const { data: orders, error: ordersError } = await supabase
     .from("orders")
     .select("*")

@@ -12,6 +12,10 @@ import type {
 type SupabaseLike = Awaited<ReturnType<typeof import("@/lib/supabase/server").createClient>>;
 
 export async function getBedBoardData(supabase: SupabaseLike, orgId: string) {
+  if (!orgId) {
+    return { departments: [], beds: [], patients: [], physicians: [] };
+  }
+
   const [
     { data: departments, error: departmentsError },
     { data: patients, error: patientsError },
