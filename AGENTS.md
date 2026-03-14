@@ -298,3 +298,5 @@ Unless the user explicitly redirects the work, assume the next task is:
 2. read `docs/PRD.md` and `docs/PROMPT.md`,
 3. produce a full-stack sprint plan,
 4. route the work across Product, Architect, Frontend, Backend, Security, QA, and DevOps as needed.
+
+Use the agent kit for the superpowers and the help using `agents` directory

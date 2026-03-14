@@ -1,14 +1,25 @@
 import { AccessDenied } from "@/components/layout/access-denied";
-import { ModulePlaceholder } from "@/components/dashboard/module-placeholder";
+import { BedGrid } from "@/components/beds/bed-grid";
+import { getBedBoardData } from "@/lib/beds";
 import { requireRole } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
 
-export default async function BedsPage() {
-  const { unauthorized } = await requireRole([
-    "admin",
-    "physician",
-    "nurse",
-    "receptionist",
+export default async function BedsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ patient?: string; admit?: string; discharge?: string }>;
+}) {
+  const [access, params, supabase] = await Promise.all([
+    requireRole([
+      "admin",
+      "physician",
+      "nurse",
+      "receptionist",
+    ]),
+    searchParams,
+    createClient(),
   ]);
+  const { unauthorized } = access;
 
   if (unauthorized) {
     return (
@@ -16,16 +27,17 @@ export default async function BedsPage() {
     );
   }
 
+  const bedBoard = await getBedBoardData(supabase, access.profile.org_id ?? "");
+
   return (
-    <ModulePlaceholder
-      title="Bed Management"
-      summary="Sprint 1 will replace this placeholder with the live bed grid, admission dialogs, and discharge workflow connected to Supabase Realtime."
-      bullets={[
-        "Department-scoped bed grid with occupancy stats",
-        "Realtime bed status updates from Supabase",
-        "Admit flow creates encounters and updates patient status",
-        "Discharge flow moves beds to housekeeping and closes the encounter",
-      ]}
+    <BedGrid
+      initialBeds={bedBoard.beds}
+      departments={bedBoard.departments}
+      patients={bedBoard.patients}
+      physicians={bedBoard.physicians}
+      prefillPatientId={params.patient ?? null}
+      initialAdmitBedId={params.admit ?? null}
+      initialDischargeBedId={params.discharge ?? null}
     />
   );
 }

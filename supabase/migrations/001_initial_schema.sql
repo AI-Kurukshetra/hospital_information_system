@@ -211,6 +211,152 @@ begin
 end;
 $$;
 
+create or replace function public.admit_patient(
+  p_patient_id uuid,
+  p_bed_id uuid,
+  p_org_id uuid,
+  p_dept_id uuid,
+  p_attending_physician_id uuid,
+  p_chief_complaint text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_encounter_id uuid;
+  v_payer text;
+  v_patient_status text;
+  v_bed_status text;
+begin
+  select insurance_payer, status
+  into v_payer, v_patient_status
+  from public.patients
+  where id = p_patient_id
+    and org_id = p_org_id;
+
+  if v_patient_status is distinct from 'registered' then
+    raise exception 'Patient is not available for admission.';
+  end if;
+
+  select status
+  into v_bed_status
+  from public.beds
+  where id = p_bed_id;
+
+  if v_bed_status is distinct from 'available' then
+    raise exception 'Bed is no longer available.';
+  end if;
+
+  insert into public.encounters (
+    patient_id,
+    bed_id,
+    org_id,
+    dept_id,
+    attending_physician_id,
+    chief_complaint,
+    status
+  )
+  values (
+    p_patient_id,
+    p_bed_id,
+    p_org_id,
+    p_dept_id,
+    p_attending_physician_id,
+    nullif(p_chief_complaint, ''),
+    'active'
+  )
+  returning id into v_encounter_id;
+
+  update public.beds
+  set status = 'occupied',
+      patient_id = p_patient_id
+  where id = p_bed_id;
+
+  update public.patients
+  set status = 'admitted'
+  where id = p_patient_id;
+
+  insert into public.billing_records (
+    encounter_id,
+    patient_id,
+    payer,
+    claim_status,
+    total_charges,
+    expected_reimbursement,
+    patient_responsibility
+  )
+  values (
+    v_encounter_id,
+    p_patient_id,
+    v_payer,
+    'draft',
+    850,
+    0,
+    850
+  );
+
+  insert into public.billing_line_items (
+    billing_record_id,
+    cpt_code,
+    description,
+    quantity,
+    unit_price,
+    total
+  )
+  select id, '99221', 'Initial hospital care', 1, 850, 850
+  from public.billing_records
+  where encounter_id = v_encounter_id;
+
+  return v_encounter_id;
+end;
+$$;
+
+create or replace function public.discharge_encounter(
+  p_encounter_id uuid,
+  p_org_id uuid
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_bed_id uuid;
+  v_patient_id uuid;
+begin
+  select bed_id, patient_id
+  into v_bed_id, v_patient_id
+  from public.encounters
+  where id = p_encounter_id
+    and org_id = p_org_id
+    and status = 'active';
+
+  if v_patient_id is null then
+    raise exception 'Encounter not found or already discharged.';
+  end if;
+
+  update public.encounters
+  set status = 'discharged',
+      discharge_date = now()
+  where id = p_encounter_id;
+
+  if v_bed_id is not null then
+    update public.beds
+    set status = 'housekeeping',
+        patient_id = null
+    where id = v_bed_id;
+  end if;
+
+  update public.patients
+  set status = 'discharged'
+  where id = v_patient_id;
+
+  return p_encounter_id;
+end;
+$$;
+
 drop trigger if exists patients_generate_mrn on public.patients;
 create trigger patients_generate_mrn
 before insert on public.patients

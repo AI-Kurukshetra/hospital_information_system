@@ -51,6 +51,15 @@ export interface Bed {
   updated_at: string;
 }
 
+export interface Department {
+  id: string;
+  org_id: string;
+  name: string;
+  code: string;
+  floor: string | null;
+  created_at?: string;
+}
+
 export interface Encounter {
   id: string;
   patient_id: string;
@@ -119,4 +128,35 @@ export interface BillingRecord {
   notes: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface BedBoardItem {
+  id: string;
+  dept_id: string;
+  department_name: string;
+  department_code: string;
+  bed_number: string;
+  bed_type: string;
+  status: Bed["status"];
+  patient_id: string | null;
+  patient_name: string | null;
+  patient_mrn: string | null;
+  encounter_id: string | null;
+  admission_date: string | null;
+  attending_physician_id: string | null;
+  attending_physician_name: string | null;
+  chief_complaint: string | null;
+}
+
+export interface PatientLookup {
+  id: string;
+  full_name: string;
+  mrn: string;
+  status: Patient["status"];
+}
+
+export interface PhysicianLookup {
+  id: string;
+  full_name: string;
+  department_id: string | null;
 }
